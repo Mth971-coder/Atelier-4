@@ -1,41 +1,54 @@
 #include <stdio.h>
 
 #define NB_VALEURS 3
-#define MAX_LIGNES 15
+#define MAX_LONGUEUR 50
+#define PAS 10   /* une graduation tous les 10 caractères */
 
-/* Affiche la ligne y de l'histogramme vertical :
-   une colonne "xxx" si la valeur atteint y, sinon des espaces */
-void afficher_ligne_histov(int valeurs[], int taille, float y)
-{
-    printf("| ");
-    for (int k = 0; k < taille; k++) {
-        if (valeurs[k] >= y) {
-            printf("xxx ");
-        } else {
-            printf("    ");
-        }
-    }
-    printf("\n");
-}
-
+/* Histogramme horizontal avec graduation et lignes de suivi '.' */
 int main(void)
 {
     int valeurs[NB_VALEURS] = { 8, 4, 12 };
 
-    /* Recherche du maximum (étape 2) */
     int maximum = valeurs[0];
     for (int i = 1; i < NB_VALEURS; i++) {
         if (valeurs[i] > maximum) {
             maximum = valeurs[i];
         }
     }
+    float echelle = (float)MAX_LONGUEUR / maximum;
 
-    for (int i = 0; i < MAX_LIGNES; i++) {
-        float y = (float)maximum * (MAX_LIGNES - i) / MAX_LIGNES;
-        afficher_ligne_histov(valeurs, NB_VALEURS, y);
+    for (int i = 0; i < NB_VALEURS; i++) {
+        int nb_croix = (int)(valeurs[i] * echelle);
+        printf("| ");
+        for (int j = 1; j <= MAX_LONGUEUR; j++) {
+            if (j <= nb_croix) {
+                printf("x");
+            } else if (j % PAS == 0) {
+                printf(".");      /* ligne de suivi */
+            } else {
+                printf(" ");
+            }
+        }
+        printf(" %d\n", valeurs[i]);
     }
-    printf("+---------------------------------------\n");
+
+    /* Axe */
+    printf("+-");
+    for (int j = 1; j <= MAX_LONGUEUR; j++) {
+        printf(j % PAS == 0 ? "+" : "-");
+    }
+    printf("\n");
+
+    /* Valeurs de la graduation */
+    printf("  ");
+    for (int j = 1; j <= MAX_LONGUEUR; j++) {
+        if (j % PAS == 0) {
+            printf("%-*d", PAS, (int)(j / echelle + 0.5f));
+        }
+    }
+    printf("\n");
     return 0;
 }
+
 
 
